@@ -1,11 +1,36 @@
 var socket = io();
+var load = 25;
 
-function receive() {
-    socket.on('send', function(data){
-       //data가 sender객체
-       //하나씩 값 확인해서 해당부분 처리하면 됨
-    });
-}
+socket.on('send', function(data){
+   //data가 sender객체
+   //하나씩 값 확인해서 해당부분 처리하면 됨
+    if(data.isScroll == true){
+        console.log("ss");
+        load = load + 25;
+        for (var i=0; i<25; i++) {
+            $('#deleteable').append("<div class=".concat('"card" onclick="myOnClick(' , data.list[i].idx, ')">\n', '<div class="container-fluid">\n' +
+                '                            <div class="card-body">\n' +
+                '                                <p class="card-columns" id="idx">', data.list[i].idx, '</p>\n','<h5 class="card-title" id="title">',data.list[i].title, '</h5>\n',
+                '<p class="card-text" id="date">', data.list[i].ctime, '<p class="card-text" id="blue">블루</p>\n' + '<p class="card-text" id="from">',
+                data.list[i].url, '</p>', '</div>\n' +
+                '                        </div>\n' +
+                '                    </div>'));
+        }
+    }
+    if(data.isSearch == true){
+        load = load + 25;
+        $('#deleteable').empty();
+        for (var i=0; i<26; i++) {
+            $('#deleteable').append("<div class=".concat('"card" onclick="myOnClick(' , data.list[i].idx, ')">\n', '<div class="container-fluid">\n' +
+                '                            <div class="card-body">\n' +
+                '                                <p class="card-columns" id="idx">', data.list[i].idx, '</p>\n','<h5 class="card-title" id="title">',data.list[i].title, '</h5>\n',
+                '<p class="card-text" id="date">', data.list[i].ctime, '<p class="card-text" id="blue">블루</p>\n' + '<p class="card-text" id="from">',
+                data.list[i].url, '</p>', '</div>\n' +
+                '                        </div>\n' +
+                '                    </div>'));
+        }
+    }
+});
 
 function getTimeStamp() {
     var d = new Date();
@@ -40,4 +65,29 @@ function search_date() {
 
 function send(data) {
     socket.emit('req', data);
+}
+
+$("#dv1").scroll( function() {
+    var elem = $("#dv1");
+    if ( elem[0].scrollHeight - elem.scrollTop() == elem.outerHeight()) {
+        var data = new Data();
+        data.insertScroll(load);
+        data.insertClick();
+        data.insertDelete();
+        data.insertSave();
+        data.insertSearch();
+        send(data);
+    }
+});
+
+function search_idx(){
+    var value = $('#sidx').val();
+    load = parseInt(value);
+    var data = new Data();
+    data.insertScroll();
+    data.insertClick();
+    data.insertDelete();
+    data.insertSave();
+    data.insertSearch(true, load, null,null,null, null);
+    send(data);
 }

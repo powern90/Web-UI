@@ -11,3 +11,11 @@ a {
   float: left;
   width: 33%;
 }
+.scrolled{
+  overflow-y:scroll;
+  width:600px;
+  height:700px;
+}
+.card{
+  margin-bottom: 30px;
+}
