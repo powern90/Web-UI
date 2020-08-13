@@ -5,27 +5,27 @@
     <link rel='stylesheet' href='/stylesheets/style.css'/>
 </head>
 <body>
-<div class="container">
-    <div class="card">
-        <div class="row">
-            <div class="col-3">
-                <div class="card" style="width: 18rem;">
-                    <div class="card-body">
-                        <p class="card-footer" id="idx">인덱스</p>
-                        <h5 class="card-title" id="title">제목</h5>
-                        <p class="card-text" id="date">날짜</p>
-                        <p class="card-text" id="blue">블루</p>
-                        <p class="card-text" id="from">사이트</p>
-                    </div>
+<div class="card-list">
+    <div class="container">
+        <div class="card">
+            <div class="container-fluid">
+                <div class="card-body">
+                    <p class="card-columns" id="idx">인덱스</p>
+                    <h5 class="card-title" id="title">제목</h5>
+                    <p class="card-text" id="date">날짜</p>
+                    <p class="card-text" id="blue">블루</p>
+                    <p class="card-text" id="from">사이트</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<script src="/socket.io/socket.io.js"></script>
 <link rel="stylesheet" href="/css/bootstrap.min.css">
+<script src="/socket.io/socket.io.js"></script>
 <script src="/js/jquery.min.js"></script>
 <script src="/js/bootstrap.min.js"></script>
+<script src="/javascript/data.js"></script>
+<script src="/javascript/connection.js"></script>
 </body>
 </html>

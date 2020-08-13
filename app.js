@@ -3,6 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var Send = require('./sender')
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -45,3 +46,16 @@ app.use(function(err, req, res, next) {
 });
 
 module.exports = app;
+
+app.io = require('socket.io')();
+app.io.on('connection', function(socket){
+  socket.on('req', function(data){
+
+
+
+
+    var send = new Send();
+    socket.emit('send',send);
+  });
+});
+
