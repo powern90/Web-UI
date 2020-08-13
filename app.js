@@ -1,15 +1,25 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var Send = require('./sender')
+let createError = require('http-errors');
+let express = require('express');
+let path = require('path');
+// let cookieParser = require('cookie-parser');
+// let logger = require('morgan');
+let Send = require('./sender');
+let Watcher = require('./watcher');
+let Post = require('./post');
+let mysql = require('mysql'); //mysql 모듈을 로딩.
+let connection = mysql.createConnection({
+  host: '192.168.1.9', // DB가 위치한 IP 주소
+  port: 3306,          // DB와 연결할 포트번호
+  user: 'test',        // 계정이름
+  password: '1234',    // 계정 비밀번호
+  database: 'board02'    // 데이터베이스 이름
+});
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var boardRouter = require('./routes/board');
+let indexRouter = require('./routes/index');
+let usersRouter = require('./routes/users');
+let boardRouter = require('./routes/board');
 
-var app = express();
+let app = express();
 
 app.use('/js', express.static(__dirname + '/node_modules/bootstrap/dist/js')); // redirect bootstrap JS
 app.use('/js', express.static(__dirname + '/node_modules/jquery/dist')); // redirect JS jQuery
@@ -19,10 +29,10 @@ app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.use(logger('dev'));
+// app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+// app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
@@ -35,7 +45,7 @@ app.use(function(req, res, next) {
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function(err, req, res) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -47,15 +57,39 @@ app.use(function(err, req, res, next) {
 
 module.exports = app;
 
+let watcher = new Watcher();
 app.io = require('socket.io')();
 app.io.on('connection', function(socket){
+  watcher.add_user(socket.id);
   socket.on('req', function(data){
+    let send = new Send();
+    checkWatcher(socket.id, data.click.idx, function(isEditing){
+      checkClick(data.click.idx, function(post) {
+        send.red = isEditing;
+        send.post = post;
+        socket.emit('send',send);
+      });
+    });
+  });
 
-
-
-
-    var send = new Send();
-    socket.emit('send',send);
+  socket.on('disconnect', function() {
+    console.log("SOCKET IO disconnect EVENT: ", socket.id, " client disconnect");
+    watcher.disconnect(socket.id);
   });
 });
 
+function checkWatcher(id, idx, callback) {
+  callback(watcher.editing(id, idx));
+}
+
+function checkClick(idx, callback) {
+  let post = new Post();
+  if(idx !== null) {
+    connection.query('select idx,title from test1 where idx=?', [idx], function (err, rows) {
+      post.idx = idx;
+      post.title = rows[0].title;
+      callback(post);
+    });
+  }
+  else callback(post);
+}

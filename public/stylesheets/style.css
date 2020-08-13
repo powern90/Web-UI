@@ -11,3 +11,15 @@ a {
   float: left;
   width: 33%;
 }
+
+#circle1 {
+  background-color: #f83c77;
+  width:10px;
+  height:10px;
+  border-radius:75px;
+  text-align:center;
+  margin:0 auto;
+  vertical-align:middle;
+  line-height:150px;
+  display: none;
+}
