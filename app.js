@@ -111,7 +111,8 @@ function checkClick(idx, callback) {
 
 function scroll(curidx, callback) {
     if (curidx != null) {
-        connection.query('select idx, title, ctime, url from test1 where idx > ? and idx <= ?', [curidx, curidx + 25], function (err, rows) {
+        connection.query('select idx, title, ctime, url from test1 where idx > ? and idx <= ?',
+            [curidx, curidx + 25], function (err, rows) {
             if (err) console.log(err);
             callback({data: rows, isScroll: true});
         })
@@ -122,7 +123,8 @@ function scroll(curidx, callback) {
 
 function searchIdx(search, searchidx, callback) {
     if (search === 1) {
-        connection.query('select idx, title, ctime, url from test1 where idx >= ? and idx <= ?', [searchidx, searchidx + 25], function (err, rows) {
+        connection.query('select idx, title, ctime, url from test1 where idx >= ? and idx <= ?',
+            [searchidx, searchidx + 25], function (err, rows) {
             if (err) console.log(err);
             callback({data: rows, isSearch: 1});
         })
@@ -134,7 +136,8 @@ function searchIdx(search, searchidx, callback) {
 function searchKeyword(search, searchkeyword, callback) {
     if (search === 3) {
         searchkeyword = "%" + searchkeyword + "%";
-        connection.query('select idx, title, ctime, url from test1 where title like ? or content like ?', [searchkeyword, searchkeyword], function (err, rows) {
+        connection.query('select idx, title, ctime, url from test1 where title like ? or content like ?',
+            [searchkeyword, searchkeyword], function (err, rows) {
             if (err) console.log(err);
             callback({data: rows, isSearch: 1});
         })
