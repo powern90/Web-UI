@@ -39,7 +39,6 @@ socket.on('send', function (data) {
         $('#form-title').val(data.post.title);
     }
     if (data.red) {
-        console.log(data.red);
         $('#circle1').show();
     } else {
         $('#circle1').hide();
@@ -74,16 +73,15 @@ function leadingZeros(n, digits) {
 }
 
 function search_date() {
-    const data = new Data();
     const startDate = $('#startDate').val();
     let endDate = $('#endDate').val();
     const date_pattern = /^(19|20)\d{2}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[0-1])$/;
     if (!date_pattern.test(startDate)) {
         alert("StartDate Error");
     }
-    if (endDate.length === 0) endDate = getTimeStamp();
-    if (!date_pattern.test(endDate)) {
-        alert("EndDate Error");
+    if (endDate.length === 0 || !date_pattern.test(endDate)) {
+        endDate = getTimeStamp();
+        $('#endDate').val(endDate);
     }
     socket.emit('search', {startDate: startDate, endDate: endDate});
 }

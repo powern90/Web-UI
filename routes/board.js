@@ -10,12 +10,13 @@ var connection = mysql.createConnection({
 });
 
 /* GET chat listing. */
-router.get('/', function(req, res, next) {
-    var query = connection.query('select idx, title, ctime, url from test1 where idx > 0 and idx <= 25', function (err, rows) {
-        if (err) console.log(err)        // 만약 에러값이 존재한다면 로그에 표시합니다.
-        console.log(rows);
-        res.render('board', {rows: rows}); // view 디렉토리에 있는 list 파일로 이동합니다.
-    });
+router.get('/', function (req, res, next) {
+    var query = connection.query(
+        'select idx, title, ctime, url from test1 where idx > 0 and idx <= 25',
+        function (err, rows) {
+            if (err) console.log(err)        // 만약 에러값이 존재한다면 로그에 표시합니다.
+            res.render('board', {rows: rows}); // view 디렉토리에 있는 list 파일로 이동합니다.
+        });
 });
 
 module.exports = router;

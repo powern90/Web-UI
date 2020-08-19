@@ -7,11 +7,6 @@ a {
   color: #00B7FF;
 }
 
-.card-list {
-  float: left;
-  width: 33%;
-}
-
 #circle1 {
   background-color: #f83c77;
   width:10px;
@@ -23,10 +18,24 @@ a {
   line-height:150px;
   display: none;
 }
+
+.search {
+  margin: 1em 0;
+}
+
+.slice {
+  float: left;
+  width: 33%;
+}
+
+.card-list {
+  height: 45em;
+}
+
 .scrolled{
   overflow-y:scroll;
-  width:600px;
-  height:700px;
+  width:100%;
+  height:45em;
 }
 .card{
   margin-bottom: 30px;

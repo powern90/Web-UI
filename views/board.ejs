@@ -5,9 +5,9 @@
     <link rel='stylesheet' href='/stylesheets/style.css'/>
 </head>
 <body>
-<div class="card-list">
-    <div class="scrolled" id="dv1">
-        <div class="container">
+<div class="slice card-list">
+    <div class="container">
+        <div class="scrolled" id="dv1">
             <div id="deleteable">
                 <%
                 for(var i = 0; i < rows.length; i++)
@@ -30,15 +30,38 @@
             </div>
         </div>
     </div>
-    <div class="container" style="margin-top:30px">
-        <p><input type="text" name="sidx" id="sidx" placeholder="idx 입력"> <input type="button" onclick="search_idx()"
-                                                                                 value="idx 검색"></p>
-        <p><input type="text" name="kidx" id="kidx" placeholder="keyword 입력"> <input type="button" onclick="search_keyword()"
-                                                                                 value="keyword 검색"></p>
+    <div class="container">
+        <div class="row search">
+            <div class="col">
+                <input type="text" name="sidx" id="sidx" placeholder="idx 입력">
+            </div>
+            <div class="col">
+                <input type="button" onclick="search_idx()" value="idx 검색">
+            </div>
+        </div>
+        <div class="row search">
+            <div class="col">
+                <input type="text" name="kidx" id="kidx" placeholder="keyword 입력">
+            </div>
+            <div class="col">
+                <input type="button" onclick="search_keyword()" value="keyword 검색">
+            </div>
+        </div>
+        <div class="row search">
+            <div class="col">
+                <input type="date" id="startDate" placeholder="yyyy-mm-dd">
+            </div>
+            <div class="col">
+                <input type="date" id="endDate" placeholder="yyyy-mm-dd">
+            </div>
+            <div class="col">
+                <input type="button" onclick="search_date()" value="날짜 검색">
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="card-list">
+<div class="slice">
     <div class="form-group">
         <label for="form-title">제목</label>
         <input type="text" id="form-title" class="form-control">
@@ -54,7 +77,7 @@
     </div>
 </div>
 
-<div class="card-list">
+<div class="slice">
     <div id="htmlcode">
     </div>
 </div>

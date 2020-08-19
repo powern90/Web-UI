@@ -70,10 +70,10 @@ app.io.on('connection', function (socket) {
                 scroll(data.scroll.curidx, function (result) {
                     searchIdx(data.search.condition, data.search.idx, function (result_idx) {
                         searchKeyword(data.search.condition, data.search.keyword, function (result_keyword) {
-                            if (result.length != 0)
+                            if (result.length !== 0)
                                 send.list = send.list.concat(result.data);
                             send.isScroll = result.isScroll;
-                            if (result_idx.isSearch != 0)
+                            if (result_idx.isSearch !== 0)
                                 send.list = send.list.concat(result_idx.data);
                             send.isSearch += result_idx.isSearch;
                             send.list = send.list.concat(result_keyword.data);
@@ -155,8 +155,4 @@ function checkUpdate(update, callback) {
     } else {
         callback();
     }
-}
-
-function sendUpdate(new_data, callback) {
-
 }

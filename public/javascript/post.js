@@ -14,4 +14,7 @@ function Post() {
     this.gob = "";
 }
 
-module.exports = Post;
+try {
+    module.exports = Post;
+}
+catch (e) {}
