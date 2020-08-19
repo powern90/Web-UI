@@ -1,11 +1,12 @@
-
+var socket = io();
 var load = 25;
+var click = 0;
 
 socket.on('send', function (data) {
     if (data.isScroll == true) {
         load = load + 25;
         for (var i = 0; i < 25; i++) {
-            $('#deleteable').append("<div class=".concat('"card" onclick="myOnClick(', data.list[i].idx, ')">\n', '<div class="container-fluid">\n' +
+            $('#deleteable').append("<div class=".concat('"card" onclick="post_onClick(', data.list[i].idx, ')">\n', '<div class="container-fluid">\n' +
                 '                            <div class="card-body">\n' +
                 '                                <p class="card-columns" id="idx">', data.list[i].idx, '</p>\n', '<h5 class="card-title" id="title">', data.list[i].title, '</h5>\n',
                 '<p class="card-text" id="date">', data.list[i].ctime, '<p class="card-text" id="blue">블루</p>\n' + '<p class="card-text" id="from">',
@@ -18,7 +19,7 @@ socket.on('send', function (data) {
         load = load + 25;
         $('#deleteable').empty();
         for (var i = 0; i < data.list.length; i++) {
-            $('#deleteable').append("<div class=".concat('"card" onclick="myOnClick(', data.list[i].idx, ')">\n', '<div class="container-fluid">\n' +
+            $('#deleteable').append("<div class=".concat('"card" onclick="post_onClick(', data.list[i].idx, ')">\n', '<div class="container-fluid">\n' +
                 '                            <div class="card-body">\n' +
                 '                                <p class="card-columns" id="idx">', data.list[i].idx, '</p>\n', '<h5 class="card-title" id="title">', data.list[i].title, '</h5>\n',
                 '<p class="card-text" id="date">', data.list[i].ctime, '<p class="card-text" id="blue">블루</p>\n' + '<p class="card-text" id="from">',
