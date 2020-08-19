@@ -1,5 +1,5 @@
 function Post() {
-    this.idx = 0;
+    this.idx = null;
     this.title = "";
     this.area = "";
     this.date = "";

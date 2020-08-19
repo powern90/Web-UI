@@ -22,10 +22,9 @@ Data.prototype.insertScroll = function(curidx=null) {
     }
 }
 
-Data.prototype.insertSave = function(update=null, idx=null) {
+Data.prototype.insertSave = function(update=new Post()) {
     this.save = {
         update: update,
-        idx: idx
     }
 }
 

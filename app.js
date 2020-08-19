@@ -5,14 +5,14 @@ let path = require('path');
 // let logger = require('morgan');
 let Send = require('./sender');
 let Watcher = require('./watcher');
-let Post = require('./post');
+let Post = require('./public/javascript/post');
 let mysql = require('mysql'); //mysql 모듈을 로딩.
 let connection = mysql.createConnection({
-  host: '192.168.1.9', // DB가 위치한 IP 주소
-  port: 3306,          // DB와 연결할 포트번호
-  user: 'test',        // 계정이름
-  password: '1234',    // 계정 비밀번호
-  database: 'board02'    // 데이터베이스 이름
+    host: '192.168.1.9', // DB가 위치한 IP 주소
+    port: 3306,          // DB와 연결할 포트번호
+    user: 'test',        // 계정이름
+    password: '1234',    // 계정 비밀번호
+    database: 'board02'    // 데이터베이스 이름
 });
 
 let indexRouter = require('./routes/index');
@@ -31,7 +31,7 @@ app.set('view engine', 'ejs');
 
 // app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({extended: false}));
 // app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -40,56 +40,72 @@ app.use('/users', usersRouter);
 app.use('/board', boardRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
+app.use(function (req, res, next) {
+    next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+app.use(function (err, req, res) {
+    // set locals, only providing error in development
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+    // render the error page
+    res.status(err.status || 500);
+    res.render('error');
 });
 
 module.exports = app;
 
 let watcher = new Watcher();
 app.io = require('socket.io')();
-app.io.on('connection', function(socket){
-  watcher.add_user(socket.id);
-  socket.on('req', function(data){
-    let send = new Send();
-    checkWatcher(socket.id, data.click.idx, function(isEditing){
-      checkClick(data.click.idx, function(post) {
-        send.red = isEditing;
-        send.post = post;
-        socket.emit('send',send);
-      });
+app.io.on('connection', function (socket) {
+    watcher.add_user(socket.id);
+    socket.on('req', function (data) {
+        let send = new Send();
+        checkWatcher(socket.id, data.click.idx, function (isEditing) {
+            checkClick(data.click.idx, function (post) {
+                checkUpdate(data.save.update, function (){});
+                send.red = isEditing;
+                send.post = post;
+                socket.emit('send', send);
+            });
+        });
     });
-  });
 
-  socket.on('disconnect', function() {
-    console.log("SOCKET IO disconnect EVENT: ", socket.id, " client disconnect");
-    watcher.disconnect(socket.id);
-  });
+    socket.on('disconnect', function () {
+        console.log("SOCKET IO disconnect EVENT: ", socket.id, " client disconnect");
+        watcher.disconnect(socket.id);
+    });
 });
 
 function checkWatcher(id, idx, callback) {
-  callback(watcher.editing(id, idx));
+    callback(watcher.editing(id, idx));
 }
 
 function checkClick(idx, callback) {
-  let post = new Post();
-  if(idx !== null) {
-    connection.query('select idx,title from test1 where idx=?', [idx], function (err, rows) {
-      post.idx = idx;
-      post.title = rows[0].title;
-      callback(post);
-    });
-  }
-  else callback(post);
+    let post = new Post();
+    if (idx !== null) {
+        connection.query('select idx,title from test1 where idx=?', [idx], function (err, rows) {
+            post.idx = idx;
+            post.title = rows[0].title;
+            callback(post);
+        });
+    } else callback(post);
+}
+
+function checkUpdate(update, callback) {
+    if (update.idx !== null) {
+        connection.query('update test1 set TITLE=?, AREA=?, DATE=?, TARGET=? where idx=?',
+            [update.title, update.area, update.date, update.target, update.idx], function (err, rows) {
+            callback();
+        });
+    }
+    else {
+        callback();
+    }
+}
+
+function sendUpdate(new_data, callback) {
+
 }

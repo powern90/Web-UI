@@ -34,8 +34,22 @@
 
 <div class="card-list">
     <div class="form-group">
-        <label for="title">제목</label>
+        <label for="form-title">제목</label>
         <input type="text" id="form-title" class="form-control">
+        <label for="form-area">지역</label>
+        <input type="text" id="form-area" class="form-control">
+        <label for="form-date">날짜</label>
+        <input type="text" id="form-date" class="form-control">
+        <label for="form-target">지원대상</label>
+        <textarea id="form-target" class="form-control"></textarea>
+        <label for="form-support">지원내용</label>
+        <textarea id="form-support" class="form-control"></textarea>
+        <input type="button" onclick="submit_update()">
+    </div>
+</div>
+
+<div class="card-list">
+    <div id="htmlcode">
     </div>
 </div>
 <div id="circle1"></div>
@@ -44,6 +58,7 @@
 <script src="/js/jquery.min.js"></script>
 <script src="/js/bootstrap.min.js"></script>
 <script src="/javascript/data.js"></script>
+<script src="/javascript/post.js"></script>
 <script src="/javascript/connection.js"></script>
 </body>
 </html>

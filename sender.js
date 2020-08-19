@@ -1,4 +1,4 @@
-let Post = require('./post');
+let Post = require('./public/javascript/post');
 function Sender() {
     this.blue = [];
     this.red = true;
