@@ -5,7 +5,7 @@ function Sender() {
     this.list = [];
     this.post = new Post();
     this.isScroll = false;
-    this.isSearch = false;
+    this.isSearch = 0;
 }
 
 module.exports = Sender;

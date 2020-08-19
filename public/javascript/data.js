@@ -6,9 +6,9 @@ function Data() {
     this.click = {};
 }
 
-Data.prototype.insertSearch = function(condition=null, idx=null, startDate= null, endDate=null, keyword=null) {
+Data.prototype.insertSearch = function(condition=0, idx=null, startDate= null, endDate=null, keyword=null) {
     this.search = {
-        condition: condition,
+        condition: condition,            //0: 안쓰는거   1: idx   2: date   3: keyword
         idx: idx,
         startDate: startDate,
         endDate: endDate,

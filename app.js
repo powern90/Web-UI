@@ -38,18 +38,14 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/board', boardRouter);
 
-// catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
 });
 
-// error handler
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
   res.status(err.status || 500);
   res.render('error');
 });
@@ -62,13 +58,18 @@ app.io.on('connection', function(socket){
     var send = new Send();
 
     scroll(data.scroll.curidx,function(result){
-      search(data.search.condition, data.search.idx, function(result_search){
-        if(result.length != 0)
-          send.list = send.list.concat(result.data);
-        send.isScroll = result.isScroll;
-        send.list = send.list.concat(result_search.data);
-        send.isSearch = result_search.isSearch;
-        socket.emit('send',send);
+      searchIdx(data.search.condition, data.search.idx, function(result_idx){
+        searchKeyword(data.search.condition, data.search.keyword, function(result_keyword){
+          if(result.length != 0)
+            send.list = send.list.concat(result.data);
+          send.isScroll = result.isScroll;
+          if(result_idx.isSearch != 0)
+            send.list = send.list.concat(result_idx.data);
+          send.isSearch += result_idx.isSearch;
+          send.list = send.list.concat(result_keyword.data);
+          send.isSearch += result_keyword.isSearch;
+          socket.emit('send',send);
+        })
       })
     })
   });
@@ -85,14 +86,27 @@ function scroll(curidx,callback){
     callback([]);
   }
 }
-function search(search, searchidx,callback){
-  if(search != null){
+function searchIdx(search, searchidx,callback){
+  if(search === 1){
     connection.query('select idx, title, ctime, url from test1 where idx >= ? and idx <= ?', [searchidx, searchidx + 25], function (err, rows) {
       if (err) console.log(err);
-      callback({data: rows, isSearch:true});
+      callback({data: rows, isSearch:1});
     })
   }
   else{
-    callback([]);
+    callback({data:null,isSearch:0});
   }
 }
+function searchKeyword(search, searchkeyword, callback){
+  if(search === 3){
+    searchkeyword = "%" +searchkeyword + "%";
+    connection.query('select idx, title, ctime, url from test1 where title like ? or content like ?', [searchkeyword, searchkeyword], function (err, rows) {
+      if (err) console.log(err);
+      callback({data: rows, isSearch:1});
+    })
+  }
+  else{
+    callback({data:null,isSearch:0});
+  }
+}
+socket
