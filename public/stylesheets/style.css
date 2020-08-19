@@ -23,3 +23,11 @@ a {
   line-height:150px;
   display: none;
 }
+.scrolled{
+  overflow-y:scroll;
+  width:600px;
+  height:700px;
+}
+.card{
+  margin-bottom: 30px;
+}

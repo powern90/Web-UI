@@ -65,10 +65,25 @@ app.io.on('connection', function (socket) {
         let send = new Send();
         checkWatcher(socket.id, data.click.idx, function (isEditing) {
             checkClick(data.click.idx, function (post) {
-                checkUpdate(data.save.update, function (){});
-                send.red = isEditing;
-                send.post = post;
-                socket.emit('send', send);
+                checkUpdate(data.save.update, function () {
+                });
+                scroll(data.scroll.curidx, function (result) {
+                    searchIdx(data.search.condition, data.search.idx, function (result_idx) {
+                        searchKeyword(data.search.condition, data.search.keyword, function (result_keyword) {
+                            if (result.length != 0)
+                                send.list = send.list.concat(result.data);
+                            send.isScroll = result.isScroll;
+                            if (result_idx.isSearch != 0)
+                                send.list = send.list.concat(result_idx.data);
+                            send.isSearch += result_idx.isSearch;
+                            send.list = send.list.concat(result_keyword.data);
+                            send.isSearch += result_keyword.isSearch;
+                            send.red = isEditing;
+                            send.post = post;
+                            socket.emit('send', send);
+                        })
+                    })
+                })
             });
         });
     });
@@ -94,14 +109,47 @@ function checkClick(idx, callback) {
     } else callback(post);
 }
 
+function scroll(curidx, callback) {
+    if (curidx != null) {
+        connection.query('select idx, title, ctime, url from test1 where idx > ? and idx <= ?', [curidx, curidx + 25], function (err, rows) {
+            if (err) console.log(err);
+            callback({data: rows, isScroll: true});
+        })
+    } else {
+        callback([]);
+    }
+}
+
+function searchIdx(search, searchidx, callback) {
+    if (search === 1) {
+        connection.query('select idx, title, ctime, url from test1 where idx >= ? and idx <= ?', [searchidx, searchidx + 25], function (err, rows) {
+            if (err) console.log(err);
+            callback({data: rows, isSearch: 1});
+        })
+    } else {
+        callback({data: null, isSearch: 0});
+    }
+}
+
+function searchKeyword(search, searchkeyword, callback) {
+    if (search === 3) {
+        searchkeyword = "%" + searchkeyword + "%";
+        connection.query('select idx, title, ctime, url from test1 where title like ? or content like ?', [searchkeyword, searchkeyword], function (err, rows) {
+            if (err) console.log(err);
+            callback({data: rows, isSearch: 1});
+        })
+    } else {
+        callback({data: null, isSearch: 0});
+    }
+}
+
 function checkUpdate(update, callback) {
     if (update.idx !== null) {
         connection.query('update test1 set TITLE=?, AREA=?, DATE=?, TARGET=? where idx=?',
             [update.title, update.area, update.date, update.target, update.idx], function (err, rows) {
-            callback();
-        });
-    }
-    else {
+                callback();
+            });
+    } else {
         callback();
     }
 }

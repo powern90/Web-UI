@@ -1,13 +1,24 @@
-var socket = io();
+
 var load = 25;
-var click = 0;
+
 socket.on('send', function (data) {
-    //data가 sender객체
-    //하나씩 값 확인해서 해당부분 처리하면 됨
-    if (data.list.length !== 0) {
+    if (data.isScroll == true) {
         load = load + 25;
         for (var i = 0; i < 25; i++) {
-            $('#deleteable').append("<div class=".concat('"card" onclick="post_onClick(', data.list[i].idx, ')">\n', '<div class="container-fluid">\n' +
+            $('#deleteable').append("<div class=".concat('"card" onclick="myOnClick(', data.list[i].idx, ')">\n', '<div class="container-fluid">\n' +
+                '                            <div class="card-body">\n' +
+                '                                <p class="card-columns" id="idx">', data.list[i].idx, '</p>\n', '<h5 class="card-title" id="title">', data.list[i].title, '</h5>\n',
+                '<p class="card-text" id="date">', data.list[i].ctime, '<p class="card-text" id="blue">블루</p>\n' + '<p class="card-text" id="from">',
+                data.list[i].url, '</p>', '</div>\n' +
+                '                        </div>\n' +
+                '                    </div>'));
+        }
+    }
+    if (data.isSearch !== 0) {
+        load = load + 25;
+        $('#deleteable').empty();
+        for (var i = 0; i < data.list.length; i++) {
+            $('#deleteable').append("<div class=".concat('"card" onclick="myOnClick(', data.list[i].idx, ')">\n', '<div class="container-fluid">\n' +
                 '                            <div class="card-body">\n' +
                 '                                <p class="card-columns" id="idx">', data.list[i].idx, '</p>\n', '<h5 class="card-title" id="title">', data.list[i].title, '</h5>\n',
                 '<p class="card-text" id="date">', data.list[i].ctime, '<p class="card-text" id="blue">블루</p>\n' + '<p class="card-text" id="from">',
@@ -90,9 +101,10 @@ function submit_update() {
     send(data);
 }
 
+
 $("#dv1").scroll(function () {
-    const elem = $("#dv1");
-    if (elem[0].scrollHeight - elem.scrollTop() === elem.outerHeight()) {
+    var elem = $("#dv1");
+    if (elem[0].scrollHeight - elem.scrollTop() == elem.outerHeight()) {
         var data = new Data();
         data.insertScroll(load);
         data.insertClick();
@@ -102,3 +114,26 @@ $("#dv1").scroll(function () {
         send(data);
     }
 });
+
+function search_idx() {
+    var value = $('#sidx').val();
+    load = parseInt(value);
+    var data = new Data();
+    data.insertScroll();
+    data.insertClick();
+    data.insertDelete();
+    data.insertSave();
+    data.insertSearch(1, load, null, null, null);
+    send(data);
+}
+
+function search_keyword() {
+    var value = $('#kidx').val();
+    var data = new Data();
+    data.insertScroll();
+    data.insertClick();
+    data.insertDelete();
+    data.insertSave();
+    data.insertSearch(3, null, null, null, value);
+    send(data);
+}

@@ -10,7 +10,7 @@
         <div class="container">
             <div id="deleteable">
                 <%
-                for(var i = 0; i < 10; i++)
+                for(var i = 0; i < rows.length; i++)
                 {
                 %>
                     <div class="card" onclick="post_onClick(<%= rows[i].idx %>)">
@@ -29,6 +29,12 @@
                 %>
             </div>
         </div>
+    </div>
+    <div class="container" style="margin-top:30px">
+        <p><input type="text" name="sidx" id="sidx" placeholder="idx 입력"> <input type="button" onclick="search_idx()"
+                                                                                 value="idx 검색"></p>
+        <p><input type="text" name="kidx" id="kidx" placeholder="keyword 입력"> <input type="button" onclick="search_keyword()"
+                                                                                 value="keyword 검색"></p>
     </div>
 </div>
 
