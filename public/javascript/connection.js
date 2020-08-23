@@ -1,13 +1,30 @@
 const socket = io();
 
 socket.on('send', function (data) {
-    if(data.post!==null) {
-        $('#form-title').val(data.post.TITLE);
-        if($("#inserted").children().length > 0) $("#inserted").empty();
-        $('#inserted').append(data.post.CONTENT);
+
+    let i;
+    let deletable = $('#deleteable');
+    if(data.isSearch === true){
+        deletable.empty();
     }
-    console.log(data);
-    if(data.isEditing) {
+    for (i = 0; i < data.list.length; i++) {
+        deletable.append("<div class=".concat('"card" onclick="post_onClick(', data.list[i].idx, ')">\n',
+            '<div class="container-fluid">\n' +
+            '<div class="card-body">\n' +
+            '<p class="card-columns" id="idx">', data.list[i].idx, '</p>\n',
+            '<h5 class="card-title" id="title">', data.list[i].title, '</h5>\n',
+            '<p class="card-text" id="date">', data.list[i].ctime,
+            '<p class="card-text" id="blue">블루</p>\n' + '<p class="card-text" id="from">',
+            data.list[i].url, '</p>', '</div>\n' +
+            '</div>\n' +
+            '</div>'));
+    }
+    if(data.list.post!==null) {
+        $('#form-title').val(data.list.post.TITLE);
+        if($("#inserted").children().length > 0) $("#inserted").empty();
+        $('#inserted').append(data.list.post.CONTENT);
+    }
+    if(data.list.isEditing) {
         $('#circle1').show();
     }
     else{
@@ -78,5 +95,31 @@ function search_date() {
 $("#dv1").scroll(function () {
     const elem = $("#dv1");
     if (elem[0].scrollHeight - elem.scrollTop() === elem.outerHeight()) {
+        const client = new cli();
+        client.next = true;
+        send(client);
     }
 });
+function search_idx() {
+    const value = $('#sidx').val();
+    let client = new cli();
+    client.parm.i = parseInt(value);
+    client.search = true;
+    send(client);
+}
+function search_keyword(){
+    const value = $('#kidx').val();
+    let client = new cli();
+    client.parm.k = value;
+    client.search = true;
+    send(client);
+}
+
+function send(data) {
+    socket.emit('req', data);
+}
+function htmlDecode(input){
+    var e = document.createElement('div');
+    e.innerHTML = input;
+    return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+}
