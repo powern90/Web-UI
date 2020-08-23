@@ -105,7 +105,6 @@ app.io.on("connection", function (socket) {
     });
     socket.on('disconnect', function(){
        console.log('disconnect: '+socket.handshake.sessionID);
-       create(socket.handshake.session, function(){});
     });
 });
 
@@ -129,10 +128,10 @@ function checkUpdate(update, idx, callback) {
     if (update !== null) {
         connection.query('update test1 set TITLE=?, AREA=?, DATE=?, TARGET=? where idx=?',
             [update.title, update.area, update.date, update.target, idx], function (err, rows) {
-                callback();
+                callback(null);
             });
     } else {
-        callback();
+        callback(null);
     }
 }
 

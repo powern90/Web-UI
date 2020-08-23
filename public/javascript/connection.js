@@ -7,28 +7,30 @@ socket.on('send', function (data) {
     if(data.isSearch === true){
         deletable.empty();
     }
-    for (i = 0; i < data.list.length; i++) {
-        deletable.append("<div class=".concat('"card" onclick="post_onClick(', data.list[i].idx, ')">\n',
-            '<div class="container-fluid">\n' +
-            '<div class="card-body">\n' +
-            '<p class="card-columns" id="idx">', data.list[i].idx, '</p>\n',
-            '<h5 class="card-title" id="title">', data.list[i].title, '</h5>\n',
-            '<p class="card-text" id="date">', data.list[i].ctime,
-            '<p class="card-text" id="blue">블루</p>\n' + '<p class="card-text" id="from">',
-            data.list[i].url, '</p>', '</div>\n' +
-            '</div>\n' +
-            '</div>'));
-    }
-    if(data.list.post!==null) {
-        $('#form-title').val(data.list.post.TITLE);
-        if($("#inserted").children().length > 0) $("#inserted").empty();
-        $('#inserted').append(data.list.post.CONTENT);
-    }
-    if(data.list.isEditing) {
-        $('#circle1').show();
-    }
-    else{
-        $('#circle1').hide();
+    if(data.list != null) {
+        for (i = 0; i < data.list.length; i++) {
+            deletable.append("<div class=".concat('"card" onclick="post_onClick(', data.list[i].idx, ')">\n',
+                '<div class="container-fluid">\n' +
+                '<div class="card-body">\n' +
+                '<p class="card-columns" id="idx">', data.list[i].idx, '</p>\n',
+                '<h5 class="card-title" id="title">', data.list[i].title, '</h5>\n',
+                '<p class="card-text" id="date">', data.list[i].ctime,
+                '<p class="card-text" id="blue">블루</p>\n' + '<p class="card-text" id="from">',
+                data.list[i].url, '</p>', '</div>\n' +
+                '</div>\n' +
+                '</div>'));
+        }
+
+        if (data.list.post !== null) {
+            $('#form-title').val(data.list.post.TITLE);
+            if ($("#inserted").children().length > 0) $("#inserted").empty();
+            $('#inserted').append(data.list.post.CONTENT);
+        }
+        if (data.list.isEditing) {
+            $('#circle1').show();
+        } else {
+            $('#circle1').hide();
+        }
     }
 });
 
