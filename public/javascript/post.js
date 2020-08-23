@@ -1,5 +1,4 @@
 function Post() {
-    this.idx = null;
     this.title = "";
     this.area = "";
     this.date = "";
@@ -13,8 +12,3 @@ function Post() {
     this.img = "";
     this.gob = "";
 }
-
-try {
-    module.exports = Post;
-}
-catch (e) {}

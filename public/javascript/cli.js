@@ -6,5 +6,6 @@ function cli() {
         k: null,
         d: []
     }
+    this.update = null;
     this.click = null;
 }

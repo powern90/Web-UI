@@ -19,9 +19,9 @@ const users = [
         user_pwd: '1'
     },
     {
-        user_id: 'hyc7575',
+        user_id: '2',
         user_nickname: '에이치',
-        user_pwd: '1q2w3e4r'
+        user_pwd: '2'
     }
 ]
 

@@ -1,24 +1,43 @@
 const socket = io();
 
 socket.on('send', function (data) {
-    let i;
-    let deletable = $('#deleteable');
-    for (i = 0; i < 25; i++) {
-        deletable.append("<div class=".concat('"card" onclick="post_onClick(', data.list[i].idx, ')">\n',
-            '<div class="container-fluid">\n' +
-            '<div class="card-body">\n' +
-            '<p class="card-columns" id="idx">', data.list[i].idx, '</p>\n',
-            '<h5 class="card-title" id="title">', data.list[i].title, '</h5>\n',
-            '<p class="card-text" id="date">', data.list[i].ctime,
-            '<p class="card-text" id="blue">블루</p>\n' + '<p class="card-text" id="from">',
-            data.list[i].url, '</p>', '</div>\n' +
-            '</div>\n' +
-            '</div>'));
+    if(data.post!==null) {
+        $('#form-title').val(data.post.TITLE);
+        if($("#inserted").children().length > 0) $("#inserted").empty();
+        $('#inserted').append(data.post.CONTENT);
+    }
+    console.log(data);
+    if(data.isEditing) {
+        $('#circle1').show();
+    }
+    else{
+        $('#circle1').hide();
     }
 });
 
 function post_onClick(idx) {
-    
+    let data = new cli();
+    console.log(idx);
+    data.click = idx;
+    send(data);
+}
+
+function send(data) {
+    console.log('Data Send: ');
+    console.log(data);
+    socket.emit('req', data);
+}
+
+function submit_update() {
+    const post = new Post();
+    let data = new cli();
+    post.title = $('#form-title').val();
+    post.area = $('#form-area').val();
+    post.date = $('#form-date').val();
+    post.support = $('#form-support').val();
+    post.target = $('#form-target').val();
+    data.update = post;
+    send(data);
 }
 
 
@@ -39,6 +58,7 @@ function leadingZeros(n, digits) {
 }
 
 function search_date() {
+    let data = new cli();
     const startDate = $('#startDate').val();
     let endDate = $('#endDate');
     const date_pattern = /^(19|20)\d{2}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[0-1])$/;
@@ -49,7 +69,10 @@ function search_date() {
         endDate = getTimeStamp();
         endDate.val(endDate);
     }
-    socket.emit('search', {startDate: startDate, endDate: endDate});
+    data.parm.d.append(startDate);
+    data.parm.d.append(endDate);
+    data.search = true;
+    send(data);
 }
 
 $("#dv1").scroll(function () {

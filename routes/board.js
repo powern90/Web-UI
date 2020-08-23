@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var mysql = require('mysql'); //mysql 모듈을 로딩.
 var connection = mysql.createConnection({
-    host: '192.168.1.9', // DB가 위치한 IP주소
+    host: '192.168.1.7', // DB가 위치한 IP주소
     port: 3306,          // DB와 연결할 포트번호
     user: 'test',        // 계정이름
     password: '1234',    // 계정 비밀번호
