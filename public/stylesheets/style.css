@@ -32,6 +32,10 @@ a {
   height: 45em;
 }
 
+p[id^=blue_] {
+  display: none;
+}
+
 .scrolled{
   overflow-y:scroll;
   width:100%;

@@ -88,7 +88,7 @@ app.io.on("connection", function (socket) {
     create(socket.handshake.session,25 ,function(){});
     var result;
     socket.on('req', function (data) {
-        checkUpdate(data.update, socket.handshake.session.isEditing, function () {
+        checkUpdate(data.update, socket.handshake.session.isEditing, socket.handshake.session ,function () {                      //바꿔야함
         });
         getPost(socket.handshake.sessionID, data.click, socket.handshake.session, function (res_post) {
             scroll(socket.handshake.session.scroll_idx, data.next, socket ,function (res_scroll) {
@@ -96,8 +96,9 @@ app.io.on("connection", function (socket) {
                     searchKeyword(data.search, data.parm.k, socket, function(res_key){
                         searchdate(data.search, data.parm.d , socket, function(res_date){
                             result = res_scroll!==null ? result=res_scroll : res_idx!==null ? result=res_idx : res_key!==null ? result=res_key : res_post!==null ? result=res_post : res_date!== null ? result= res_date : result= null;
-                            socket.emit('send', {list:result, isSearch:socket.handshake.session.isSearch});
+                            socket.emit('send', {list:result, isSearch:socket.handshake.session.isSearch, blue: socket.handshake.session.blue});
                             socket.handshake.session.isSearch = false;
+                            socket.handshake.session.blue = false;              //바꿔야함
                             socket.handshake.session.save();
                         });
                     });
@@ -126,11 +127,15 @@ function getPost(id, idx, socket, callback) {
     } else callback(null);
 }
 
-function checkUpdate(update, idx, callback) {
+function checkUpdate(update, idx,socket, callback) {
     if (update !== null) {
         connection.query('update test1 set TITLE=?, AREA=?, DATE=?, TARGET=? where idx=?',
             [update.title, update.area, update.date, update.target, idx], function (err, rows) {
+                socket.blue = true;
+                socket.save();                                                        //이 부분 다른 곳으로 옮기기
+                app.io.emit('send', {list:null, isSearch:false, blue: true, idx2: idx });
                 callback(null);
+
             });
     } else {
         callback(null);
@@ -146,6 +151,8 @@ function create(socket,idx, callback) {
     socket.date = [];
     socket.date_idx =0;
     socket.date_content = [];
+
+    socket.blue = false;                          //바꿔야함
     socket.post = null;
     socket.isEditing = 0;
     socket.save();
@@ -153,7 +160,7 @@ function create(socket,idx, callback) {
 }
 function scroll(curidx, isScroll,socket, callback) {
     if (isScroll !== false && socket.handshake.session.keyword.length === 0 && socket.handshake.session.date.length === 0) {
-        connection.query('select idx, title, ctime, url from test1 where idx > ? and idx <= ?',
+        connection.query('select idx, title, ctime, url,gob from test1 where idx > ? and idx <= ?',
             [curidx, curidx + 25], function (err, rows) {
                 if (err) console.log(err);
                 create(socket.handshake.session,curidx+25 ,function(){});
@@ -161,7 +168,7 @@ function scroll(curidx, isScroll,socket, callback) {
             })
     }
     else if(isScroll !== false && socket.handshake.session.keyword.length !== 0 && socket.handshake.session.date.length ===0){
-        connection.query('select idx, title, ctime, url from test1 where idx > ? and (title like ? or content like ?) limit 25',
+        connection.query('select idx, title, ctime, url,gob from test1 where idx > ? and (title like ? or content like ?) limit 25',
             [socket.handshake.session.keyword_idx,socket.handshake.session.keyword_content, socket.handshake.session.keyword_content], function (err, rows) {
                 if (err) console.log(err);
                 if(rows.length ===0)
@@ -175,7 +182,7 @@ function scroll(curidx, isScroll,socket, callback) {
             })
     }
     else if(isScroll !== false && socket.handshake.session.keyword.length === 0 && socket.handshake.session.date.length !==0){
-        connection.query('select idx, title, ctime, url from test1 where idx > ? and ctime between ? and ? limit 25',
+        connection.query('select idx, title, ctime, url,gob from test1 where idx > ? and ctime between ? and ? limit 25',
             [socket.handshake.session.date_idx, socket.handshake.session.date_content[0], socket.handshake.session.date_content[1]], function (err, rows) {
                 if (err) console.log(err);
                 if(rows.length ===0)
@@ -194,7 +201,7 @@ function scroll(curidx, isScroll,socket, callback) {
 }
 function searchIdx(isSearch, searchidx, socket,callback) {
     if (isSearch === true && searchidx !== null) {
-        connection.query('select idx, title, ctime, url from test1 where idx >= ? and idx <= ?',
+        connection.query('select idx, title, ctime, url, gob from test1 where idx >= ? and idx <= ?',
             [searchidx, searchidx + 25], function (err, rows) {
                 if (err) console.log(err);
                 if(rows.length ===0) {
@@ -216,7 +223,7 @@ function searchIdx(isSearch, searchidx, socket,callback) {
 function searchKeyword(isSearch, searchkeyword, socket, callback) {
     if (isSearch === true && searchkeyword !== null) {
         searchkeyword = "%" + searchkeyword + "%";
-        connection.query('select idx, title, ctime, url from test1 where idx > 0 and (title like ? or content like ?) limit 25',
+        connection.query('select idx, title, ctime, url, gob from test1 where idx > 0 and (title like ? or content like ?) limit 25',
             [searchkeyword, searchkeyword], function (err, rows) {
                 if (err) console.log(err);
                 if(rows.length ===0) {
@@ -240,7 +247,7 @@ function searchKeyword(isSearch, searchkeyword, socket, callback) {
 }
 function searchdate(isSearch, searchdate, socket, callback) {
     if (isSearch === true && searchdate !== null) {
-        connection.query('select idx, title, ctime, url from test1 where idx > 0 and ctime between ? and ? limit 25',
+        connection.query('select idx, title, ctime, url, gob from test1 where idx > 0 and ctime between ? and ? limit 25',
             [searchdate[0], searchdate[1]], function (err, rows) {
                 if (err) console.log(err);
                 if(rows.length ===0) {

@@ -16,10 +16,12 @@
                     <div class="card" onclick="post_onClick(<%= rows[i].idx %>)">
                         <div class="container-fluid">
                             <div class="card-body">
-                                <p class="card-columns" id="idx"><%= rows[i].idx %></p>
+                                <p class="card-columns" id="idx"><%= rows[i].idx %>
+                                    <% if(rows[i].gob == 1) {%>💜<%}%>
+                                </p>
                                 <h5 class="card-title" id="title"><%= rows[i].title %></h5>
                                 <p class="card-text" id="date"><%= rows[i].ctime %></p>
-                                <p class="card-text" id="blue">블루</p>
+                                <p class="card-text" id="blue_<%= rows[i].idx %>">💙</p>
                                 <p class="card-text" id="from"><%= rows[i].url %></p>
                             </div>
                         </div>

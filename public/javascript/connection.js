@@ -9,13 +9,16 @@ socket.on('send', function (data) {
     }
     if(data.list != null) {
         for (i = 0; i < data.list.length; i++) {
+            if(data.list[i].gob==true){
+                $('#blue_'+data.list[i].idx).show();
+            }
             deletable.append("<div class=".concat('"card" onclick="post_onClick(', data.list[i].idx, ')">\n',
                 '<div class="container-fluid">\n' +
                 '<div class="card-body">\n' +
                 '<p class="card-columns" id="idx">', data.list[i].idx, '</p>\n',
                 '<h5 class="card-title" id="title">', data.list[i].title, '</h5>\n',
                 '<p class="card-text" id="date">', data.list[i].ctime,
-                '<p class="card-text" id="blue">블루</p>\n' + '<p class="card-text" id="from">',
+                '<p class="card-text" id=blue_', data.list[i].idx, '>💙</p>\n' + '<p class="card-text" id="from">',
                 data.list[i].url, '</p>', '</div>\n' +
                 '</div>\n' +
                 '</div>'));
@@ -31,6 +34,9 @@ socket.on('send', function (data) {
         } else {
             $('#circle1').hide();
         }
+    }
+    if(data.blue){
+        $('#blue_'+ data.idx2).show();
     }
 });
 
