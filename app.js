@@ -94,10 +94,12 @@ app.io.on("connection", function (socket) {
             scroll(socket.handshake.session.scroll_idx, data.next, socket ,function (res_scroll) {
                 searchIdx(data.search, data.parm.i, socket ,function (res_idx) {
                     searchKeyword(data.search, data.parm.k, socket, function(res_key){
-                        result = res_scroll!==null ? result=res_scroll : res_idx!==null ? result=res_idx : res_key!==null ? result=res_key : res_post!==null ? result=res_post : result = null;
-                        socket.emit('send', {list:result, isSearch:socket.handshake.session.isSearch});
-                        socket.handshake.session.isSearch = false;
-                        socket.handshake.session.save();
+                        searchdate(data.search, data.parm.d , socket, function(res_date){
+                            result = res_scroll!==null ? result=res_scroll : res_idx!==null ? result=res_idx : res_key!==null ? result=res_key : res_post!==null ? result=res_post : res_date!== null ? result= res_date : result= null;
+                            socket.emit('send', {list:result, isSearch:socket.handshake.session.isSearch});
+                            socket.handshake.session.isSearch = false;
+                            socket.handshake.session.save();
+                        });
                     });
                 });
             });
@@ -142,6 +144,8 @@ function create(socket,idx, callback) {
     socket.keyword_idx = 0;
     socket.keyword_content = null;
     socket.date = [];
+    socket.date_idx =0;
+    socket.date_content = [];
     socket.post = null;
     socket.isEditing = 0;
     socket.save();
@@ -170,6 +174,20 @@ function scroll(curidx, isScroll,socket, callback) {
                 }
             })
     }
+    else if(isScroll !== false && socket.handshake.session.keyword.length === 0 && socket.handshake.session.date.length !==0){
+        connection.query('select idx, title, ctime, url from test1 where idx > ? and ctime between ? and ? limit 25',
+            [socket.handshake.session.date_idx, socket.handshake.session.date_content[0], socket.handshake.session.date_content[1]], function (err, rows) {
+                if (err) console.log(err);
+                if(rows.length ===0)
+                    callback(null);
+                else {
+                    socket.handshake.session.date = rows;
+                    socket.handshake.session.date_idx = rows[rows.length - 1].idx;
+                    socket.handshake.session.save();
+                    callback(rows);
+                }
+            })
+    }
     else {
         callback(null);
     }
@@ -179,10 +197,17 @@ function searchIdx(isSearch, searchidx, socket,callback) {
         connection.query('select idx, title, ctime, url from test1 where idx >= ? and idx <= ?',
             [searchidx, searchidx + 25], function (err, rows) {
                 if (err) console.log(err);
-                create(socket.handshake.session,searchidx+25 ,function(){});
-                socket.handshake.session.isSearch = true
-                socket.handshake.session.save();
-                callback(rows);
+                if(rows.length ===0) {
+                    socket.handshake.session.isSearch = true;
+                    callback(null);
+                }
+                else {
+                    create(socket.handshake.session, searchidx + 25, function () {
+                    });
+                    socket.handshake.session.isSearch = true
+                    socket.handshake.session.save();
+                    callback(rows);
+                }
             })
     } else {
         callback(null);
@@ -194,16 +219,47 @@ function searchKeyword(isSearch, searchkeyword, socket, callback) {
         connection.query('select idx, title, ctime, url from test1 where idx > 0 and (title like ? or content like ?) limit 25',
             [searchkeyword, searchkeyword], function (err, rows) {
                 if (err) console.log(err);
-                socket.handshake.session.keyword = rows;
-                socket.handshake.session.keyword_idx = rows[rows.length-1].idx;
-                socket.handshake.session.keyword_content = searchkeyword;
-                socket.handshake.session.isSearch = true;
-                socket.handshake.session.save();
-                callback(rows);
+                if(rows.length ===0) {
+                    socket.handshake.session.isSearch = true;
+                    callback(null);
+                }
+                else {
+                    create(socket.handshake.session, 25, function () {
+                    });
+                    socket.handshake.session.keyword = rows;
+                    socket.handshake.session.keyword_idx = rows[rows.length - 1].idx;
+                    socket.handshake.session.keyword_content = searchkeyword;
+                    socket.handshake.session.isSearch = true;
+                    socket.handshake.session.save();
+                    callback(rows);
+                }
             })
     } else {
         callback(null);
     }
 }
-
+function searchdate(isSearch, searchdate, socket, callback) {
+    if (isSearch === true && searchdate !== null) {
+        connection.query('select idx, title, ctime, url from test1 where idx > 0 and ctime between ? and ? limit 25',
+            [searchdate[0], searchdate[1]], function (err, rows) {
+                if (err) console.log(err);
+                if(rows.length ===0) {
+                    socket.handshake.session.isSearch = true;
+                    callback(null);
+                }
+                else {
+                    create(socket.handshake.session, 25, function () {
+                    });
+                    socket.handshake.session.date = rows;
+                    socket.handshake.session.date_idx = rows[rows.length - 1].idx;
+                    socket.handshake.session.date_content = [searchdate[0], searchdate[1]];
+                    socket.handshake.session.isSearch = true;
+                    socket.handshake.session.save();
+                    callback(rows);
+                }
+            })
+    } else {
+        callback(null);
+    }
+}
 module.exports = app;

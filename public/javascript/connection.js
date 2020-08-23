@@ -79,17 +79,20 @@ function leadingZeros(n, digits) {
 function search_date() {
     let data = new cli();
     const startDate = $('#startDate').val();
-    let endDate = $('#endDate');
+    let endDatesel = $('#endDate');
     const date_pattern = /^(19|20)\d{2}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[0-1])$/;
     if (!date_pattern.test(startDate)) {
         alert("StartDate Error");
+        return;
     }
-    if (endDate.length === 0 || !date_pattern.test(endDate.val())) {
+    let endDate = endDatesel.val();
+    console.log(endDatesel.val().length);
+    if (endDatesel.val().length === 0 || !date_pattern.test(endDatesel.val())) {
         endDate = getTimeStamp();
-        endDate.val(endDate);
+        endDatesel.val(endDate);
     }
-    data.parm.d.append(startDate);
-    data.parm.d.append(endDate);
+    data.parm.d= [startDate, endDate];
+    console.log(data.parm.d);
     data.search = true;
     send(data);
 }
