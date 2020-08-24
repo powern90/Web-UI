@@ -4,7 +4,8 @@ function cli() {
     this.parm = {
         i: null,
         k: null,
-        d: []
+        d: [],
+        g: []
     }
     this.update = null;
     this.click = null;

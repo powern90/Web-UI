@@ -126,6 +126,14 @@ function search_keyword(){
     client.search = true;
     send(client);
 }
+function search_gob() {
+    const value1 = $('#gobidx1').val();
+    const value2 = $('#gobidx2').val();
+    let client = new cli();
+    client.parm.g = [parseInt(value1), parseInt(value2)];
+    client.search = true;
+    send(client);
+}
 
 function send(data) {
     socket.emit('req', data);

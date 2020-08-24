@@ -93,13 +93,19 @@ app.io.on("connection", function (socket) {
         getPost(socket.handshake.sessionID, data.click, socket.handshake.session, function (res_post) {
             scroll(socket.handshake.session.scroll_idx, data.next, socket ,function (res_scroll) {
                 searchIdx(data.search, data.parm.i, socket ,function (res_idx) {
-                    searchKeyword(data.search, data.parm.k, socket, function(res_key){
-                        searchdate(data.search, data.parm.d , socket, function(res_date){
-                            result = res_scroll!==null ? result=res_scroll : res_idx!==null ? result=res_idx : res_key!==null ? result=res_key : res_post!==null ? result=res_post : res_date!== null ? result= res_date : result= null;
-                            socket.emit('send', {list:result, isSearch:socket.handshake.session.isSearch, blue: socket.handshake.session.blue});
-                            socket.handshake.session.isSearch = false;
-                            socket.handshake.session.blue = false;              //바꿔야함
-                            socket.handshake.session.save();
+                    searchKeyword(data.search, data.parm.k, socket, function(res_key) {
+                        searchdate(data.search, data.parm.d, socket, function (res_date) {
+                            searchgob(data.search, data.parm.g, socket, function (res_gob) {
+                                result = res_scroll !== null ? result = res_scroll : res_idx !== null ? result = res_idx : res_key !== null ? result = res_key : res_post !== null ? result = res_post : res_date !== null ? result = res_date : res_gob !== null ? result=res_gob : result=null;
+                                socket.emit('send', {
+                                    list: result,
+                                    isSearch: socket.handshake.session.isSearch,
+                                    blue: socket.handshake.session.blue
+                                });
+                                socket.handshake.session.isSearch = false;
+                                socket.handshake.session.blue = false;              //바꿔야함
+                                socket.handshake.session.save();
+                            });
                         });
                     });
                 });
@@ -129,7 +135,7 @@ function getPost(id, idx, socket, callback) {
 
 function checkUpdate(update, idx,socket, callback) {
     if (update !== null) {
-        connection.query('update test1 set TITLE=?, AREA=?, DATE=?, TARGET=? where idx=?',
+        connection.query('update test1 set TITLE=?, AREA=?, DATE=?, TARGET=?, GOB=1 where idx=?',
             [update.title, update.area, update.date, update.target, idx], function (err, rows) {
                 socket.blue = true;
                 socket.save();                                                        //이 부분 다른 곳으로 옮기기
@@ -160,7 +166,7 @@ function create(socket,idx, callback) {
     callback();
 }
 function scroll(curidx, isScroll,socket, callback) {
-    if (isScroll !== false && socket.handshake.session.keyword.length === 0 && socket.handshake.session.date.length === 0) {
+    if (isScroll !== false && socket.handshake.session.keyword.length === 0 && socket.handshake.session.date.length === 0 && curidx >=0) {
         connection.query('select idx, title, ctime, url,gob from test1 where idx > ? and idx <= ?',
             [curidx, curidx + 25], function (err, rows) {
                 if (err) console.log(err);
@@ -212,6 +218,26 @@ function searchIdx(isSearch, searchidx, socket,callback) {
                 else {
                     create(socket.handshake.session, searchidx + 25, function () {
                     });
+                    socket.handshake.session.isSearch = true
+                    socket.handshake.session.save();
+                    callback(rows);
+                }
+            })
+    } else {
+        callback(null);
+    }
+}
+function searchgob(isSearch, searchidx, socket,callback) {
+    if (isSearch === true && searchidx !== null) {
+        connection.query('select idx, title, ctime, url, gob from test1 where idx >= ? and idx <= ? and gob = 0',
+            [searchidx[0], searchidx[1]], function (err, rows) {
+                if (err) console.log(err);
+                if(rows.length ===0) {
+                    socket.handshake.session.isSearch = true;
+                    callback(null);
+                }
+                else {
+                    create(socket.handshake.session,-1 ,function(){});
                     socket.handshake.session.isSearch = true
                     socket.handshake.session.save();
                     callback(rows);
