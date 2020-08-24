@@ -2,9 +2,8 @@
 <html>
 <head>
     <title>Bluemango Web-UI</title>
-    <link rel='stylesheet' href='/stylesheets/style.css'/>
 </head>
-<body>
+<body class="all">
 <div class="slice card-list">
     <div class="container">
         <div class="scrolled" id="dv1">
@@ -19,8 +18,8 @@
                                 <p class="card-columns" id="idx"><%= rows[i].idx %>
                                     <% if(rows[i].gob == 1) {%>💜<%}%>
                                 </p>
-                                <h5 class="card-title" id="title"><%= rows[i].title %></h5>
-                                <p class="card-text" id="date"><%= rows[i].ctime %></p>
+                                <h5 class="card-title" id="title_<%= rows[i].idx %>"><%= rows[i].title %></h5>
+                                <p class="card-text" id="date_<%= rows[i].idx %>"><%= rows[i].ctime %></p>
                                 <p class="card-text" id="blue_<%= rows[i].idx %>">💙</p>
                                 <p class="card-text" id="from"><%= rows[i].url %></p>
                             </div>
@@ -35,29 +34,29 @@
     <div class="container">
         <div class="row search">
             <div class="col">
-                <input type="text" name="sidx" id="sidx" placeholder="idx 입력">
+                <input class="input-button-col" type="text" name="sidx" id="sidx" placeholder="idx 입력">
             </div>
             <div class="col">
-                <input type="button" onclick="search_idx()" value="idx 검색">
-            </div>
-        </div>
-        <div class="row search">
-            <div class="col">
-                <input type="text" name="kidx" id="kidx" placeholder="keyword 입력">
-            </div>
-            <div class="col">
-                <input type="button" onclick="search_keyword()" value="keyword 검색">
+                <input class="input-button-col" type="button" onclick="search_idx()" value="idx 검색">
             </div>
         </div>
         <div class="row search">
             <div class="col">
-                <input type="date" id="startDate" placeholder="yyyy-mm-dd">
+                <input class="input-button-col" type="text" name="kidx" id="kidx" placeholder="keyword 입력">
             </div>
             <div class="col">
-                <input type="date" id="endDate" placeholder="yyyy-mm-dd">
+                <input class="input-button-col" type="button" onclick="search_keyword()" value="keyword 검색">
+            </div>
+        </div>
+        <div class="row search">
+            <div class="col">
+                <input class="input-button-col" type="date" id="startDate" placeholder="yyyy-mm-dd">
             </div>
             <div class="col">
-                <input type="button" onclick="search_date()" value="날짜 검색">
+                <input class="input-button-col" type="date" id="endDate" placeholder="yyyy-mm-dd">
+            </div>
+            <div class="col">
+                <input class="input-button-col" type="button" onclick="search_date()" value="날짜 검색">
             </div>
         </div>
     </div>
@@ -75,7 +74,7 @@
         <textarea id="form-target" class="form-control"></textarea>
         <label for="form-support">지원내용</label>
         <textarea id="form-support" class="form-control"></textarea>
-        <input type="button" onclick="submit_update()" value="Save">
+        <input class="save-button" type="button" onclick="submit_update()" value="Save">
     </div>
 </div>
 
@@ -93,5 +92,6 @@
 <script src="/javascript/connection.js"></script>
 <script src="/javascript/cli.js"></script>
 <script src="/javascript/post.js"></script>
+<link rel='stylesheet' href='/stylesheets/style.css'/>
 </body>
 </html>

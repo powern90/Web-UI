@@ -7,7 +7,7 @@ socket.on('send', function (data) {
     if(data.isSearch === true){
         deletable.empty();
     }
-    if(data.list != null) {
+    if(data.list != null && data.blue===false) {
         for (i = 0; i < data.list.length; i++) {
             if(data.list[i].gob==true){
                 $('#blue_'+data.list[i].idx).show();
@@ -36,6 +36,7 @@ socket.on('send', function (data) {
         }
     }
     if(data.blue){
+        $('#title_'+ data.idx2).text(data.list.title);
         $('#blue_'+ data.idx2).show();
     }
 });
@@ -128,9 +129,4 @@ function search_keyword(){
 
 function send(data) {
     socket.emit('req', data);
-}
-function htmlDecode(input){
-    var e = document.createElement('div');
-    e.innerHTML = input;
-    return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
 }

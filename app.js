@@ -133,7 +133,8 @@ function checkUpdate(update, idx,socket, callback) {
             [update.title, update.area, update.date, update.target, idx], function (err, rows) {
                 socket.blue = true;
                 socket.save();                                                        //이 부분 다른 곳으로 옮기기
-                app.io.emit('send', {list:null, isSearch:false, blue: true, idx2: idx });
+                const up = {idx: idx, title: update.title, area: update.area, date: update.date, target: update.target};
+                app.io.emit('send', {list:up, isSearch:false, blue: true, idx2: idx });
                 callback(null);
 
             });
