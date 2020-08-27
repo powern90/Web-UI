@@ -4,6 +4,8 @@ deploy-to-server:
   only:
     - dev
   before_script:
+    - npm cache clean --force 
+    - rm -rf ./node_modules
     - npm install
   script:
     - pm2 delete all
