@@ -8,7 +8,6 @@ deploy-to-server:
     - rm -rf ./node_modules
     - npm install
   script:
-    - pm2 delete all
-    - pm2 --name Web-UI start npm -- start
+    - pm2 restart all
   tags:
     - deploy
