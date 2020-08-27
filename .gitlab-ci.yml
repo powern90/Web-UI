@@ -6,7 +6,7 @@ deploy-to-server:
   before_script:
     - npm install
   script:
-    - npm run lint
+    - npm init -y
     - node ./bin/www
   tags:
     - deploy
