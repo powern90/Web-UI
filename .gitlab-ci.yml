@@ -1,0 +1,12 @@
+# Master 브랜치에 push가 들어올 때 동작하는 job
+deploy-to-server:
+  stage: deploy
+  only:
+    - dev
+  before_script:
+    - npm install
+  script:
+    - npm run lint
+    - node ./bin/www
+  tags:
+    - deploy
