@@ -27,6 +27,7 @@ const sharedsession = require("express-socket.io-session");
 let indexRouter = require('./routes/index');
 let checkRouter = require('./routes/check');
 let boardRouter = require('./routes/board');
+let crollRouter = require('./routes/croll_log')
 
 let connection = mysql.createConnection({
     host: '192.168.1.7', // DB가 위치한 IP 주소
@@ -65,6 +66,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/check', checkRouter);
 app.use('/board', boardRouter);
+app.use('/log', crollRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -296,4 +298,32 @@ function searchdate(isSearch, searchdate, socket, callback) {
         callback(null);
     }
 }
+var io = require('socket.io').listen(81);
+var net = require('net');
+var server = net.createServer(function (stream) {
+    stream.on("connect", function () {
+        console.log("rendering client connected");
+    });
+    stream.on("data", function (data) {
+        console.log(data.toString())
+        var result = data.toString()
+        app.io.emit('from_py', result);
+    });
+});
+server.listen(9090);
+
+var net2 = require('net');
+var server2 = net2.createServer(function (stream) {
+    stream.on("connect", function () {
+        console.log("rendering client connected");
+    });
+    stream.on("data", function (data) {
+        console.log(data.toString())
+        var result = data.toString()
+        app.io.emit('from_py_rc', result);
+    });
+});
+server2.listen(9091);
+
+
 module.exports = app;

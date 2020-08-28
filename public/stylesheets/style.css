@@ -65,3 +65,6 @@ p[id^=blue_] {
   border-color : #3c3f41;
   background-color: #3c3f41;
 }
+.ft{
+  font-size : 20px;
+}
