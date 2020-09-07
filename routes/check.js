@@ -3,9 +3,9 @@ var router = express.Router();
 
 router.post('/', (req, res) => {
     const body = req.body; // body-parser 사용
-    if( findUser(body.user_id, body.user_pwd)) {
+    if( findUser(body.login)) {
         // 해당유저가 존재한다면
-        req.session.user_uid = findUserIndex(body.user_id, body.user_pwd); //유니크한 값 유저 색인 값 저장
+        req.session.user_uid = findUserIndex(body.login); //유니크한 값 유저 색인 값 저장
         res.redirect('/board');
     } else {
         res.send('유효하지 않습니다.');
@@ -25,13 +25,13 @@ const users = [
     }
 ]
 
-const findUser = (user_id, user_pwd) => {
+const findUser = (info) => {
     // id와 password가 일치하는 유저 찾는 함수, 없으면 undefined 반환
-    return users.find( v => (v.user_id === user_id && v.user_pwd === user_pwd) );
+    return users.find( v => (v.user_id === info[0] && v.user_pwd === info[1]) );
 }
-const findUserIndex = (user_id, user_pwd) => {
+const findUserIndex = (info) => {
     // 일치하는 유저의 index값(유니크) 반환
-    return users.findIndex( v => (v.user_id === user_id && v.user_pwd === user_pwd) );
+    return users.findIndex( v => (v.user_id === info[0] && v.user_pwd === info[1]) );
 }
 
 module.exports = router;

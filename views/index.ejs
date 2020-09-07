@@ -5,21 +5,25 @@
   <title>Document</title>
 </head>
 <body>
-<h3>로그인</h3>
-<form action="/check" method="post">
-  <table>
-    <tr>
-      <td>아이디 : </td>
-      <td><input type="text" name="user_id"></td>
-    </tr>
-    <tr>
-      <td>비번 : </td>
-      <td><input type="password" name="user_pwd"></td>
-    </tr>
-    <tr>
-      <td><input type="submit" value="로그인"></td>
-    </tr>
-  </table>
-</form>
+<link rel='stylesheet' href='/stylesheets/login.css'/>
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+<script src="/js/jquery.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+
+<div class="wrapper fadeInDown">
+  <div id="formContent">
+
+    <div class="fadeIn first">
+      <p>Bluemango
+    </div>
+
+    <form action="/check" method="post">
+      <input type="text" id="login" class="fadeIn second" name="login" placeholder="login">
+      <input type="text" id="password" class="fadeIn third" name="login" placeholder="password">
+      <input type="submit" class="fadeIn fourth" value="Log In">
+    </form>
+
+  </div>
+</div>
 </body>
 </html>
