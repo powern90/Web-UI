@@ -1,9 +1,13 @@
 const socket = io();
 
 socket.on('send', function (data) {
-
     let i;
     let deletable = $('#deleteable');
+    if(data.delet === true){
+        $('div').remove('.card'+data.idx2);
+        //$('onclick').remove('.post_onClick('+data.idx2+')');
+        //$('#deleteable.card').remove('post_onClick('+data.idx2+')');
+    }
     if(data.isSearch === true){
         deletable.empty();
     }
@@ -12,7 +16,7 @@ socket.on('send', function (data) {
             if(data.list[i].gob==true){
                 $('#blue_'+data.list[i].idx).show();
             }
-            deletable.append("<div class=".concat('"card" onclick="post_onClick(', data.list[i].idx, ')">\n',
+            deletable.append("<div class=".concat('"card', data.list[i].idx,'" onclick="post_onClick(', data.list[i].idx, ')">\n',
                 '<div class="container-fluid">\n' +
                 '<div class="card-body">\n' +
                 '<p class="card-columns" id="idx">', data.list[i].idx, '</p>\n',
@@ -52,6 +56,12 @@ function send(data) {
     console.log('Data Send: ');
     console.log(data);
     socket.emit('req', data);
+}
+
+function delete_board() {
+    let data = new cli();
+    data.delete = true;
+    send(data);
 }
 
 function submit_update() {

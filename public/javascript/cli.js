@@ -9,4 +9,5 @@ function cli() {
     }
     this.update = null;
     this.click = null;
+    this.delete = null;
 }

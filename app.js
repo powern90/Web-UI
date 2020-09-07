@@ -6,6 +6,7 @@ let path = require('path');
 let Srv = require('./srv');
 let MySQLStore  = require("express-mysql-session");
 var min = 10000;
+
 let session     = require("express-session")({
     secret              : 'ABCD1234ABAB!@',
     resave              : false,
@@ -27,6 +28,7 @@ const sharedsession = require("express-socket.io-session");
 let indexRouter = require('./routes/index');
 let checkRouter = require('./routes/check');
 let boardRouter = require('./routes/board');
+let crollRouter = require('./routes/croll_log')
 
 let connection = mysql.createConnection({
     host: '192.168.1.7', // DB가 위치한 IP 주소
@@ -65,6 +67,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/check', checkRouter);
 app.use('/board', boardRouter);
+app.use('/log', crollRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -88,29 +91,34 @@ app.io.on("connection", function (socket) {
     create(socket.handshake.session,25 ,function(){});
     var result;
     socket.on('req', function (data) {
-        checkUpdate(data.update, socket.handshake.session.isEditing, socket.handshake.session ,function () {                      //바꿔야함
-        });
-        getPost(socket.handshake.sessionID, data.click, socket.handshake.session, function (res_post) {
-            scroll(socket.handshake.session.scroll_idx, data.next, socket ,function (res_scroll) {
-                searchIdx(data.search, data.parm.i, socket ,function (res_idx) {
-                    searchKeyword(data.search, data.parm.k, socket, function(res_key) {
-                        searchdate(data.search, data.parm.d, socket, function (res_date) {
-                            searchgob(data.search, data.parm.g, socket, function (res_gob) {
-                                result = res_scroll !== null ? result = res_scroll : res_idx !== null ? result = res_idx : res_key !== null ? result = res_key : res_post !== null ? result = res_post : res_date !== null ? result = res_date : res_gob !== null ? result=res_gob : result=null;
-                                socket.emit('send', {
-                                    list: result,
-                                    isSearch: socket.handshake.session.isSearch,
-                                    blue: socket.handshake.session.blue
+        if (data.delete === true) {
+            deleteboard(data, socket.handshake.session.isEditing, socket.handshake.session, function () {});
+        }
+        else{
+            checkUpdate(data.update, socket.handshake.session.isEditing, socket.handshake.session, function () {                      //바꿔야함
+            });
+            getPost(socket.handshake.sessionID, data.click, socket.handshake.session, function (res_post) {
+                scroll(socket.handshake.session.scroll_idx, data.next, socket, function (res_scroll) {
+                    searchIdx(data.search, data.parm.i, socket, function (res_idx) {
+                        searchKeyword(data.search, data.parm.k, socket, function (res_key) {
+                            searchdate(data.search, data.parm.d, socket, function (res_date) {
+                                searchgob(data.search, data.parm.g, socket, function (res_gob) {
+                                    result = res_scroll !== null ? result = res_scroll : res_idx !== null ? result = res_idx : res_key !== null ? result = res_key : res_post !== null ? result = res_post : res_date !== null ? result = res_date : res_gob !== null ? result = res_gob : result = null;
+                                    socket.emit('send', {
+                                        list: result,
+                                        isSearch: socket.handshake.session.isSearch,
+                                        blue: socket.handshake.session.blue
+                                    });
+                                    socket.handshake.session.isSearch = false;
+                                    socket.handshake.session.blue = false;              //바꿔야함
+                                    socket.handshake.session.save();
                                 });
-                                socket.handshake.session.isSearch = false;
-                                socket.handshake.session.blue = false;              //바꿔야함
-                                socket.handshake.session.save();
                             });
                         });
                     });
                 });
             });
-        })
+        }
     });
     socket.on('disconnect', function(){
        console.log('disconnect: '+socket.handshake.sessionID);
@@ -149,6 +157,20 @@ function checkUpdate(update, idx,socket, callback) {
     }
 }
 
+function deleteboard(delet, idx,socket, callback) {
+    if(delet !== null){
+        connection.query('delete from test1 where idx=?', [idx], function (err, rows) {
+            //socket.delet = true;
+            //socket.save();
+            app.io.emit('send', {idx2 : idx, delet : true});
+            callback(null);
+        });
+    }else{
+        callback(null);
+    }
+
+}
+
 function create(socket,idx, callback) {
     socket.scroll_idx = idx;
     socket.isSearch = false;
@@ -160,6 +182,7 @@ function create(socket,idx, callback) {
     socket.date_content = [];
 
     socket.blue = false;                          //바꿔야함
+    socket.delet = false;
     socket.post = null;
     socket.isEditing = 0;
     socket.save();
@@ -296,4 +319,20 @@ function searchdate(isSearch, searchdate, socket, callback) {
         callback(null);
     }
 }
+
+var io = require('socket.io').listen(81);
+var net = require('net');
+
+var server = net.createServer(function (stream) {
+    stream.on("connect", function () {
+        console.log("rendering client connected");
+    });
+    stream.on("data", function (data) {
+        console.log(data.toString())
+        var result = data.toString()
+        socket.emit("from_py", result)
+    });
+});
+server.listen(9090);
+
 module.exports = app;

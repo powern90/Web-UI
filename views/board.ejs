@@ -12,7 +12,7 @@
                 for(var i = 0; i < rows.length; i++)
                 {
                 %>
-                    <div class="card" onclick="post_onClick(<%= rows[i].idx %>)">
+                    <div class="card<%= rows[i].idx %>" onclick="post_onClick(<%= rows[i].idx %>)">
                         <div class="container-fluid">
                             <div class="card-body">
                                 <p class="card-columns" id="idx"><%= rows[i].idx %>
@@ -86,6 +86,7 @@
         <label for="form-support">지원내용</label>
         <textarea id="form-support" class="form-control"></textarea>
         <input class="save-button" type="button" onclick="submit_update()" value="Save">
+        <input class="delete-button" type="button" onclick="delete_board()" value="삭제">
     </div>
 </div>
 
