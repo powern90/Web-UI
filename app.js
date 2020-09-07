@@ -19,6 +19,8 @@ let session     = require("express-session")({
     }),
     cookie: {expires: new Date(Date.now() + min)}
 });
+
+
 MySQLStore(session);
 let mysql = require('mysql'); //mysql 모듈을 로딩.
 let bodyParser = require("body-parser");

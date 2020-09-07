@@ -6,6 +6,8 @@ socket.on('send', function (data) {
     let deletable = $('#deleteable');
     if(data.isSearch === true){
         deletable.empty();
+        const $messageTextBox = $('#dv1');
+        $messageTextBox.scrollTop(0);
     }
     if(data.list != null && data.blue===false) {
         for (i = 0; i < data.list.length; i++) {
